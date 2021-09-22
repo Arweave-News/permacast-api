@@ -17,7 +17,7 @@ const smartweave = SmartWeaveNodeFactory.memCached(arweave);
 LoggerFactory.INST.logLevel("fatal");
 
 const app = express();
-const port = 3000
+const port = process.env.PORT || 3000
 
 
 
@@ -31,45 +31,34 @@ async function findPodcast({contractId, podcastId}) {
 }
 
 
-function blockheightToDate(bh) {
-      const EPOCH = 1528451997
-      const date = EPOCH + (bh / 720 * 24 * 3600) // To fix - (Mon, 19 Jan 1970 17:48:44 GMT seems wrong)
-
-      return date
-}
-
 function generateRss(podcast) {
 
-      let img = `https://arweave.net/${podcast.cover}`;
-      podcast.explicit = 'yes' // REMOVE
-
+      const IMG = `https://arweave.net/${podcast.cover}`;
 
       const feed = new RSS({
             custom_namespaces: { 'itunes': 'http://www.itunes.com/dtds/podcast-1.0.dtd' },
             title: podcast.podcastName,
             description: podcast.description,
-            managingEditor: `${podcast.owner}@weve.email`,
-            image_url: img,
+            managingEditor: podcast.email,
+            categories: podcast.categories,
+            image_url: IMG,
             site_url: `https://permacast-v1.surge.sh/#/podcasts/${podcast.pid}`,
-            language: "en", // TODO - make variable based on SWC
+            language: podcast.language,
             custom_elements: [
-                  {'itunes:image': { _attr: { href: img } } },
-                  {'itunes:email' : `${podcast.owner}@weve.email`},
-                  {'itunes:explicit': podcast.explicit}, // TODO - make variavle based on SWC state
-                  {'itunes:author': podcast.podcastName}, // 'podcast "arweavers" is made by arweavers. acceptible?
-                  {'itunes:category': podcast.category}
+                  {'itunes:image': { _attr: { href: IMG } } },
+                  {'itunes:explicit': podcast.explicit}, 
+                  {'itunes:author': podcast.author},
             ]
       });
 
       for (let episode of podcast.episodes) {
-            episode.length = '1' // REMOVE
-            episode.type = 'audio/mpeg' // REMOVE
+
             feed.item({
                   title: episode.episodeName,
                   description: episode.description,
-                  enclosure: { url:`https://arweave.net/${episode.audioTx}`, length: episode.length, type: episode.type },
+                  enclosure: { url:`https://arweave.net/${episode.audioTx}`, length: episode.audioTxByteSize, type: episode.type },
                   guid: episode.eid,
-                  date: episode.timestamp,
+                  date: episode.uploadedAt, // Arweave block's timestamp
             })
       }
 
