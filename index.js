@@ -60,7 +60,7 @@ function generateRss(podcast) {
             feed.item({
                   title: episode.episodeName,
                   description: episode.description,
-                  enclosure: { url:`https://arweave.net/${episode.audioTx}`, length: episode.audioTxByteSize, type: episode.type },
+                  enclosure: { url:`https://arweave.net/${episode.audioTx}`, size: episode.audioTxByteSize, type: episode.type },
                   guid: episode.eid,
                   date: episode.uploadedAt, // Arweave block's timestamp
             })
