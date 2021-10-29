@@ -30,7 +30,6 @@ async function findPodcast({contractId, podcastId}) {
       return generateRss(wantedPodcast)
 }
 
-
 function generateRss(podcast) {
 
       const IMG = `https://arweave.net/${podcast.cover}`;
@@ -62,7 +61,7 @@ function generateRss(podcast) {
                   description: episode.description,
                   enclosure: { url:`https://arweave.net/${episode.audioTx}`, size: episode.audioTxByteSize, type: episode.type },
                   guid: episode.eid,
-                  date: episode.uploadedAt, // Arweave block's timestamp
+                  date: episode.uploadedAt * 1000,
             })
       }
 
