@@ -41,7 +41,7 @@ function generateRss(podcast) {
             managingEditor: podcast.email,
             categories: podcast.categories,
             image_url: IMG,
-            site_url: `https://permacast-v1.surge.sh/#/podcasts/${podcast.pid}`,
+            site_url: `https://permacast.net/#/podcasts/${podcast.pid}`,
             language: podcast.language,
             custom_elements: [
                   {'itunes:image': { _attr: { href: IMG } } },
